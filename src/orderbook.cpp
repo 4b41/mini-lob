@@ -1,16 +1,16 @@
-#include "orderbook.h"
+#include "../include/orderbook.h"
 
 #include <numeric>
 #include <chrono>
 #include <ctime>
 
-Trades Orderbook::addOrder(OrderPointer order){
-  if (_orders.contains(order)){
+Trades OrderBook::addOrder(OrderPointer order){
+  if (_orders.contains(order->getOrderID())){
     return { };
   }
 
   if (order->getOrderType() == OrderType::FOK && !canMatch(order->getSide(), order->getPrice())){
-    return { }
+    return { };
   }
 
   OrderPointers::iterator IT;
@@ -29,13 +29,13 @@ Trades Orderbook::addOrder(OrderPointer order){
   return MatchOrders();
 }
 
-void Orderbook::cancelOrder(OrderID id){
+void OrderBook::cancelOrder(OrderID id){
   if (!_orders.contains(id)){
     return;
   }  
 
-  const auto& [order, IT] = _orders.at(orderID);
-  _orders.erase(order);
+  const auto& [order, IT] = _orders.at(id);
+  _orders.erase(id);
   
   if (order->getSide() == Side::Sell){
     auto price = order->getPrice();
@@ -54,32 +54,32 @@ void Orderbook::cancelOrder(OrderID id){
   }
 }
 
-Traders Orderbook::modifyOrder(OrderModify order){
+Trades OrderBook::modifyOrder(OrderModify order){
   if (!_orders.contains(order.getOrderID())){
     return { };
   }
   const auto& [prevOrder,_] = _orders.at(order.getOrderID());
-  cancelOrder(order.getOrderID);
+  cancelOrder(order.getOrderID());
   return addOrder(order.toOrder(prevOrder->getOrderType()));
 }
 
-bool Orderbook::canMatch(Side side, Price price){
+bool OrderBook::canMatch(Side side, Price price) const {
   if (side == Side::Buy){
     if (_asks.empty()){
       return false;
     }
-    const auto& [bestBid, _] = *bids_.begin();
+    const auto& [bestBid, _] = *_bids.begin();
     return price >= bestBid;
   } else {
     if (_bids.empty()){
       return false;
     }
-    const auto& [bestAsk, _] = *asks_.begin();
+    const auto& [bestAsk, _] = *_asks.begin();
     return price >= bestAsk;
   }
 }
 
-Trades Orderbook::MatchOrders(){
+Trades OrderBook::MatchOrders(){
   Trades trades;
   trades.reserve(_orders.size());
 
@@ -95,8 +95,8 @@ Trades Orderbook::MatchOrders(){
       break;
     }
     while (bids.size() && asks.size()){
-      auto& bid = bids.from();
-      auto& ask = asks.from();
+      auto& bid = bids.front();
+      auto& ask = asks.front();
 
       Quantity quantity = std::min(bid->getRemainingQuantity(), ask->getRemainingQuantity());
       
@@ -105,11 +105,11 @@ Trades Orderbook::MatchOrders(){
 
       if (bid->isFull()){
         bids.pop_front();
-        orders.erase(bid->getOrderID());
+        _orders.erase(bid->getOrderID());
       }
       if (ask->isFull()){
         asks.pop_front();
-        orders.erase(ask->getOrderID());
+        _orders.erase(ask->getOrderID());
       }
       
       if (bids.empty()){
@@ -136,21 +136,21 @@ Trades Orderbook::MatchOrders(){
   if (!_asks.empty()){
     auto& [_,asks] = *_asks.begin();
     auto& order = asks.front();
-    if (order->getOrder()Type() == OrderType::FOK){
+    if (order->getOrderType() == OrderType::FOK){
       cancelOrder(order->getOrderID());
     }
   }
   return trades;
 }
 
-OrderBookLimitObj Orderbook::getOrderData() const {
+OrderBookLimitObj OrderBook::getOrderData() const {
   LimitObjs bidData, askData;
   bidData.reserve(_orders.size());
   askData.reserve(_orders.size());
 
   auto createLimitObj = [](Price price, const OrderPointers& orders){
     return LimitObj{ price, std::accumulate(orders.begin(), orders.end(), (Quantity)0, [](Quantity runningSum, const OrderPointer& order){
-        return runningSum + order->getRemainingQuantity(); }
+        return runningSum + order->getRemainingQuantity();
         })
     };
   };

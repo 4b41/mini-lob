@@ -4,9 +4,8 @@
 
 #include <map>
 #include <unordered_map>
+#include <functional>
 #include <thread>
-#include <conditional_variable>
-#include <mutex>
 
 #include "order.h"
 #include "trade.h"
@@ -14,7 +13,7 @@
 struct LimitObj {
   Price _price;
   Quantity _quantity;
-}
+};
 
 using LimitObjs = std::vector<LimitObj>;
 
@@ -31,15 +30,16 @@ class OrderBookLimitObj {
   private:
     LimitObjs _bids;
     LimitObjs _asks;
-}
+};
 
 class OrderBook {
   public:
-    Orderbook();
     
     Trades addOrder(OrderPointer order);
     void cancelOrder(OrderID id);
     Trades modifyOrder(OrderModify order);
+
+    std::size_t size() const { return _orders.size(); }
 
   private:
     struct OrderEntry {
@@ -50,7 +50,7 @@ class OrderBook {
     struct LimitData {
       OrderPointer _order{ nullptr };
       OrderPointers::iterator _IT;
-    }
+    };
 
     std::map<Price,OrderPointers, std::greater<Price>> _bids;
     std::map<Price,OrderPointers, std::less<Price>> _asks;
@@ -61,10 +61,8 @@ class OrderBook {
 
     Trades MatchOrders();
 
-    std::size_t Size() const { return _orders.size(); }
-
     OrderBookLimitObj getOrderData() const;
 
-}
+};
 
 #endif // !ORDERBOOK_H_

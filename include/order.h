@@ -6,6 +6,7 @@
 #include <list>
 #include <exception>
 #include <format>
+#include <memory>
 
 #include "usings.h"
 
@@ -16,12 +17,12 @@ enum class OrderType {
   GFD,
   AON,
   MARKET
-}
+};
 
 enum class Side {
   Buy,
   Sell
-}
+};
 
 class Order {
   public:
@@ -34,11 +35,11 @@ class Order {
       this->_remainingQuantity = quantity;
     }
 
-    Order (OrderType orderType, OrderID id, Side side, Quantity quantity) // Market order constructor
+    Order (OrderType orderType, OrderID id, Side side, Quantity quantity) 
       : Order(OrderType::MARKET, id, side, std::numeric_limits<Price>::quiet_NaN(), quantity){}
 
     OrderType getOrderType() const { return _orderType; }
-    OrderId getOrderID() const { return _orderID; }
+    OrderID getOrderID() const { return _orderID; }
     Side getSide() const { return _side; }
     Price getPrice() const { return _price; }
     Quantity getRemainingQuantity() const { return _remainingQuantity; }
@@ -47,10 +48,11 @@ class Order {
     bool isFull() const { return getRemainingQuantity() == 0; }
     void fill(Quantity quantity){
       if (quantity > getRemainingQuantity()){
-        throw std::logic_error(std::format("Order ({}) cannot be filled for more than its remaining quantity)", getOrderID());
+        throw std::logic_error(std::format("Order ({}) cannot be filled for more than its remaining quantity)", getOrderID()));
       }
       _remainingQuantity -= quantity;
     }
+
   private:
     OrderType _orderType;
     OrderID _orderID;
@@ -62,28 +64,31 @@ class Order {
 };
 
 using OrderPointer = std::shared_ptr<Order>;
-using OrderPointers = std::list<OrderPOinter>;
+using OrderPointers = std::list<OrderPointer>;
 
 class OrderModify {
   public:
-    OrderModify(OrderID id, Price price, Quantity quantity){
+    OrderModify(OrderID id, Price price, Side side, Quantity quantity){
       this->_id = id;
       this->_price = price;
+      this->_side = side;
       this->_quantity = quantity;
     }
 
-    OrderId getOrderID() const { return _orderID; }
+    OrderID getOrderID() const { return _id; }
     Price getPrice() const { return _price; }
-    Quantity getQuantity const { return _quantity; }
+    Side getSide() const { return _side; }
+    Quantity getQuantity() const { return _quantity; }
     
     OrderPointer toOrder(OrderType type) const {
-      return std::make_shared<Order>(type,getOrderId(),getSide(),getPrice(),getQuantity());
+      return std::make_shared<Order>(type,getOrderID(), getSide(),getPrice(),getQuantity());
     }
 
   private:
     OrderID _id;
     Price _price;
+    Side _side;
     Quantity _quantity;
-}
+};
 
 #endif // !ORDER_H_

@@ -17,13 +17,13 @@ class Trade {
       this->_ask = ask;
     }
 
-    const TradeInfo& getBid() const return { return bidTrade; }
-    const TradeInfo& getAsk() const return { return askTrade; }
+    const TradeInfo& getBid() const { return _bid; }
+    const TradeInfo& getAsk() const { return _ask; }
 
   private:
     TradeInfo _bid;
     TradeInfo _ask;
-}
+};
 
 using Trades = std::vector<Trade>;
 
