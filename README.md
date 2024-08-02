@@ -1,9 +1,9 @@
-## NuLOB
-======
+# NuLOB
+
 Low latency order matching system written in C++.
 
 ## Quickstart
-=====
+
 To compile and run the orderbook, run these commands from the terminal:
 
 1. Clone repo: git clone https://github.com/4b41.mini-lob.git
@@ -12,6 +12,6 @@ To compile and run the orderbook, run these commands from the terminal:
 4. Run the program: ./Main
 
 ## ToDo
-=====
+
 * Create makefile
 * Implement feed to parse incoming order data from txt file
