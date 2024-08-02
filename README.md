@@ -11,7 +11,7 @@ To compile and run the orderbook, run these commands from the terminal:
 3. Compile program: g++ -std=c++20 -Iinclude src/orderbook.cpp src/main.cpp -o Main
 4. Run the program: ./Main
 
-## ToDo
+## Todo
 
 * Create makefile
 * Implement feed to parse incoming order data from txt file
