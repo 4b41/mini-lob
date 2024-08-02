@@ -31,6 +31,7 @@ class Order {
       this->_orderID = id;
       this->_side = side;
       this->_price = price;
+      this->_timestamp = log_time();
       this->_initialQuantity = quantity;
       this->_remainingQuantity = quantity;
     }
@@ -42,6 +43,7 @@ class Order {
     OrderID getOrderID() const { return _orderID; }
     Side getSide() const { return _side; }
     Price getPrice() const { return _price; }
+    Timestamp getTimestamp() const { return _timestamp; }
     Quantity getRemainingQuantity() const { return _remainingQuantity; }
     Quantity getFilledQuantity() const { return _initialQuantity - _remainingQuantity; }
 
@@ -58,6 +60,7 @@ class Order {
     OrderID _orderID;
     Side _side;
     Price _price;
+    Timestamp _timestamp;
     Quantity _initialQuantity;
     Quantity _remainingQuantity;
   
@@ -68,26 +71,29 @@ using OrderPointers = std::list<OrderPointer>;
 
 class OrderModify {
   public:
-    OrderModify(OrderID id, Price price, Side side, Quantity quantity){
+    OrderModify(OrderID id, Side side, Price price, Quantity quantity){
       this->_id = id;
-      this->_price = price;
       this->_side = side;
+      this->_price = price;
+      this->_timestamp = log_time();
       this->_quantity = quantity;
     }
 
     OrderID getOrderID() const { return _id; }
-    Price getPrice() const { return _price; }
     Side getSide() const { return _side; }
+    Price getPrice() const { return _price; }
+    Timestamp getTimestamp() const { return _timestamp; }
     Quantity getQuantity() const { return _quantity; }
     
     OrderPointer toOrder(OrderType type) const {
-      return std::make_shared<Order>(type,getOrderID(), getSide(),getPrice(),getQuantity());
+      return std::make_shared<Order>(type,getOrderID(), getSide(), getPrice(), getQuantity());
     }
 
   private:
     OrderID _id;
-    Price _price;
     Side _side;
+    Price _price;
+    Timestamp _timestamp;
     Quantity _quantity;
 };
 

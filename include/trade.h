@@ -6,8 +6,9 @@
 
 struct TradeInfo {
   OrderID _id;
-  Price price;
-  Quantity quantity;
+  Price _price;
+  Quantity _quantity;
+  Timestamp _timestamp;
 };
 
 class Trade {
@@ -15,6 +16,7 @@ class Trade {
     Trade(const TradeInfo& bid, const TradeInfo& ask){
       this->_bid = bid;
       this->_ask = ask;
+      this->_timestamp = log_time();
     }
 
     const TradeInfo& getBid() const { return _bid; }
@@ -23,6 +25,7 @@ class Trade {
   private:
     TradeInfo _bid;
     TradeInfo _ask;
+    Timestamp _timestamp;
 };
 
 using Trades = std::vector<Trade>;
