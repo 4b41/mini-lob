@@ -1,4 +1,4 @@
-# NuLOB
+# mini-lob
 
 Low latency order matching system written in C++.
 
