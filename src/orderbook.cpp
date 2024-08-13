@@ -1,6 +1,7 @@
 #include "../include/orderbook.h"
 
 #include <numeric>
+#include <chrono>
 #include <ctime>
 
 Trades OrderBook::addOrder(OrderPointer order){
@@ -164,3 +165,8 @@ OrderBookLimitObj OrderBook::getOrderData() const {
   
   return OrderBookLimitObj{ bidData, askData };
 } 
+
+OrderID Orderbook::nextID(){
+  _prevID += 1;
+  return _prevID;
+}

@@ -55,9 +55,11 @@ class OrderBook {
     std::map<Price,OrderPointers, std::greater<Price>> _bids;
     std::map<Price,OrderPointers, std::less<Price>> _asks;
     std::unordered_map<OrderID,OrderEntry> _orders;
+
+    OrderID nextID();
     
     bool canMatch(Side side, Price price) const;
-    bool canFill(Side side, Price price, Quantity quantity);
+    bool canFill(Side side, Price price, Quantity quantity) const;
 
     Trades MatchOrders();
 

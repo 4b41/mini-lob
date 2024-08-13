@@ -14,7 +14,7 @@ def split_file(path):
         print(f"FILE DOES NOT EXIST AT PATH: {path}")
         return
     df = pd.read_csv(file_path, sep='\s+', header=None, names = ['TIMEID','UNIXTIME','BID','ASK','BIDSIZE','ASKSIZE'])
-    symbol = path.rstrip('.txt')
+    symbol = path[:4] # should use rstrip, and error handle incorrect file types
     column_to_file = {
             'TIMEID': f'./data/{symbol}_TIMEID.txt',
             'UNIXTIME': f'./data/{symbol}_UNIXTIME.txt',
@@ -26,7 +26,7 @@ def split_file(path):
     for col, filename in column_to_file.items():
         with open(filename, 'w') as file:
             for data in df[col]:
-                file.write(f'{d}\n')
+                file.write(f'{data}\n')
     print("Success!")
 
 if __name__=='__main__':
