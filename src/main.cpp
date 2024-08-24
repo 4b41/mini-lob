@@ -5,6 +5,5 @@
 int main(){
   Feed feed;
   feed.simulate_cl();
-  
   return 0;
 }

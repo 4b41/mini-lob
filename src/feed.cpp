@@ -134,6 +134,8 @@ void Feed::printOB(OrderBookLimitObj& data){
   std::cout << std::endl << "---------------------------------------------------" << std::endl;
 }
 
+void clear(){
+}
 // 6  1    12  1 6  8 6 1 12     1 6
 //   A     Asks          Bids      B
 // 100 ████████ 10     9 ██████    99
