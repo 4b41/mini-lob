@@ -51,6 +51,12 @@ void Feed::simulate_cl(){
     std::cin >> inp_type;
     std::cout << std::endl;
 
+    if (inp_type == 2){
+      std::cout << "Input limit price: ";
+      std::cin >> inp_p;
+      std::cout << std::endl;
+    }
+
     std:: cout << "Input order quantity: ";
     std::cin >> inp_q;
     std::cout << std::endl;
@@ -64,10 +70,6 @@ void Feed::simulate_cl(){
 
       std::cout << "Market " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << " units has been submitted!" << std::endl;
     } else if (inp_type == 2){
-      std::cout << "Input limit price: ";
-      std::cin >> inp_p;
-      std::cout << std::endl;
-
       std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::GTC, n_id, n_s, inp_p, inp_q);
       _book.addOrder(ptr);
 
@@ -113,7 +115,7 @@ void Feed::printOB(OrderBookLimitObj& data){
       }
       std::cout << " " << std::setw(6) << asks[i]._quantity << "      ";
     } else {
-      // empty space !!!
+      std::cout << "                                ";
     }
     if (i < bids.size()){
       std::cout << std::setw(6) << bids[i]._quantity << " ";
