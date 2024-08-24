@@ -40,6 +40,8 @@ class OrderBook {
     Trades modifyOrder(OrderModify order);
 
     std::size_t size() const { return _orders.size(); }
+
+    OrderBookLimitObj getOrderData() const;
     OrderID nextID();
 
   private:
@@ -57,12 +59,12 @@ class OrderBook {
     std::map<Price,OrderPointers, std::less<Price>> _asks;
     std::unordered_map<OrderID,OrderEntry> _orders;
 
+    OrderID _prevID = 0;
+
     bool canMatch(Side side, Price price) const;
     bool canFill(Side side, Price price, Quantity quantity) const;
 
     Trades MatchOrders();
-
-    OrderBookLimitObj getOrderData() const;
 
 };
 

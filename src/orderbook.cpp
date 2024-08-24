@@ -166,7 +166,7 @@ OrderBookLimitObj OrderBook::getOrderData() const {
   return OrderBookLimitObj{ bidData, askData };
 } 
 
-OrderID Orderbook::nextID(){
+OrderID OrderBook::nextID(){
   _prevID += 1;
   return _prevID;
 }

@@ -7,11 +7,10 @@
 
 class Feed {
   public:
-    Feed();
     void simulate_cl();
 
   private:
-    TimeStamp _time;
+    Timestamp _time;
     Price _bid;
     Price _ask;
     Quantity _bidsize;
@@ -27,7 +26,7 @@ class Feed {
 
     void read_from_stream();
     void printOB(OrderBookLimitObj& data);
-}
+};
 
 #endif // !FEED_H_
 

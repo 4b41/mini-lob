@@ -5,28 +5,28 @@
 #include "../include/feed.h"
 #include "../include/orderbook.h"
 
-void feed::load_stream(){
-  
-}
+//void Feed::load_stream(){
+//  
+//}
 
-void feed::read_from_stream(){
-  std::ifstream TIME(this->time_from_file.c_str());
-  std::ifstream BID(this->bids_from_file.c_str());
-  std::ifstream BIDSIZE(this->bid_size_from_file.c_str());
-  std::ifstream ASK(this->asks_from_file.c_str());
-  std::ifstream ASKSIZE(this->ask_size_from_file.c_str());
+//void Feed::read_from_stream(){
+//  std::ifstream TIME(this->time_from_file.c_str());
+//  std::ifstream BID(this->bids_from_file.c_str());
+//  std::ifstream BIDSIZE(this->bid_size_from_file.c_str());
+//  std::ifstream ASK(this->asks_from_file.c_str());
+//  std::ifstream ASKSIZE(this->ask_size_from_file.c_str());
+//
+//  while (TIME >> _time, BID >> _bid, BIDSIZE >> _bidsize, ASK >> _asks, ASKSIZE >> _asksize){
+//    if ((_bid > 0.01) && (_bids < 9999) && (_bid_size != 0) && (_asks > 0.01) && (_asksize != 0)){
+//      std::shared_ptr<Order> bid = std<::make_shared<Order>(OrderType::GTC,id,Side::Buy,_bid,_bid_size);
+//      std::shared_ptr<Order> ask = std<::make_shared<Order>(OrderType::GTC,id,Side::Sell,_asks,_ask_size);
+//      _book.addOrder(bid);
+//      _book.addOrder(match);
+//      Trades log = _book.MatchOrders(); 
+//    }
+//  }
 
-  while (TIME >> _time, BID >> _bid, BIDSIZE >> _bidsize, ASK >> _asks, ASKSIZE >> _asksize){
-    if ((_bid > 0.01) && (_bids < 9999) && (_bid_size != 0) && (_asks > 0.01) && (_asksize != 0)){
-      std::shared_ptr<Order> bid = std<::make_shared<Order>(OrderType::GTC,id,Side::Buy,_bid,_bid_size);
-      std::shared_ptr<Order> ask = std<::make_shared<Order>(OrderType::GTC,id,Side::Sell,_asks,_ask_size);
-      _book.addOrder(bid);
-      _book.addOrder(match);
-      Trades log = _book.MatchOrders(); 
-    }
-  }
-
-void feed::simulate_cl(){
+void Feed::simulate_cl(){
   std::ifstream f("./res/ascii.txt");
 
   if (f.is_open()){
@@ -41,11 +41,11 @@ void feed::simulate_cl(){
     Quantity inp_q;
     Price inp_p;
 
-    OrderID n_id = _book.nextOrder();
-
-    std::cout << "Select side: 1 - Submit bid | 2 - Submit ask" << std::endl;
+    std::cout << "Select option: " << std::endl << "1 - Submit bid | 2 - Submit ask | 3 - Quit" << std::endl;
     std::cin >> inp_side;
     std::cout << std::endl;
+    
+    if (inp_side == 3) break;
 
     std::cout << "Select order type: 1 - Market | 2 - Limit(GTC)" << std::endl;
     std::cin >> inp_type;
@@ -55,36 +55,38 @@ void feed::simulate_cl(){
     std::cin >> inp_q;
     std::cout << std::endl;
 
-    Side n_s = static_cast<Side>(i-1);
+    Side n_s = static_cast<Side>(inp_side-1);
+    OrderID n_id = _book.nextID();
 
     if (inp_type == 1){
-      std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::Market);
-      book.addOrder(ptr);
+      std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::MARKET, n_id, n_s, inp_q);
+      _book.addOrder(ptr);
 
-      std::cout << "Market " << inp_side == 1 ? "bid ":"ask " << "order #" << n_id << " " << "for " << inp_q << " units has been submitted!";
-    } else {
+      std::cout << "Market " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << " units has been submitted!" << std::endl;
+    } else if (inp_type == 2){
       std::cout << "Input limit price: ";
       std::cin >> inp_p;
       std::cout << std::endl;
 
       std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::GTC, n_id, n_s, inp_p, inp_q);
-      book.addOrder(ptr);
+      _book.addOrder(ptr);
 
-      std::cout << "GTC " << inp_side == 1 ? "bid ":"ask " << "order #" << n_id << " " << "for " << inp_q << "units has been submitted!";
+      std::cout << "GTC " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << "units has been submitted!" << std::endl;
     }
 
     OrderBookLimitObj data = _book.getOrderData();
     printOB(data);
   }
+  std::cout << "Order book successfully terminated." << std::endl;
 }
 
-void feed::printOB(OrderBookLimitObj& data){
+void Feed::printOB(OrderBookLimitObj& data){
   const auto& bids = data.getBids();
   const auto& asks = data.getAsks();
     
   size_t size = std::max(bids.size(), asks.size());
 
-  std::cout << std::setw(6) << "A" << std::setw(13) << "Asks" << std::setw(22) << "Bids" << std::setw(10) << "B" << std::endl;
+  std::cout << std::endl << std::setw(6) << "A" << std::setw(13) << "Asks" << std::setw(15) << "Quantity" << std::setw(9) << "Bids" << std::setw(14) << "B" << std::endl;
   
   Quantity maxA = 0;
   Quantity maxB = 0;
@@ -100,16 +102,21 @@ void feed::printOB(OrderBookLimitObj& data){
 
   for (size_t i = 0; i < size; i++){
     if (i < asks.size()){
-      std::cout << std::setw(6) << asks[i]._price << " " << std::setw(12);
+      std::cout << std::setw(6) << asks[i]._price << " ";
       double f = static_cast<double>(asks[i]._quantity)/maxA;
       int barsize = static_cast<int>(f*12);
+      for (int i = 0; i < 12-barsize; i++){
+        std::cout << " ";
+      }
       for (int i = 0; i < barsize; i++){
         std::cout << "█";
       }
-      std::cout << " " << std::setw(6) << asks[i]._quantity << "    ";
+      std::cout << " " << std::setw(6) << asks[i]._quantity << "      ";
+    } else {
+      // empty space !!!
     }
     if (i < bids.size()){
-      std::cout << std::setw(6) << bids[i]._price << " ";
+      std::cout << std::setw(6) << bids[i]._quantity << " ";
       double f = static_cast<double>(bids[i]._quantity)/maxB;
       int barsize = static_cast<int>(f*12);
       for (int i = 0; i < barsize; i++){
@@ -118,10 +125,11 @@ void feed::printOB(OrderBookLimitObj& data){
       for (int i = 0; i < 12-barsize; i++){
         std::cout << " ";
       }
-      std::cout << " " << std::setw(6) << bids[i]._price()
+      std::cout << " " << std::setw(6) << bids[i]._price;
     }
     std::cout << std::endl;
   }
+  std::cout << std::endl << "---------------------------------------------------" << std::endl;
 }
 
 // 6  1    12  1 6  8 6 1 12     1 6
