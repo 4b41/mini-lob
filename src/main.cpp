@@ -11,8 +11,6 @@ int main(){
     throw std::runtime_error("File \"ascii.txt\" could not be opened.");
   }
 
-  // std::cout << "Enter "
-
   OrderBook book;
   const OrderID id = 1;
   std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::GTC, id, Side::Buy, 100, 10);

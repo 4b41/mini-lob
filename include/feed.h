@@ -7,7 +7,8 @@
 
 class Feed {
   public:
-
+    Feed();
+    void simulate_cl();
 
   private:
     TimeStamp _time;
@@ -16,13 +17,16 @@ class Feed {
     Quantity _bidsize;
     Quantity _asksize;
 
-    string time_from_file; // check type from alexabosi
-    string bids_from_file;
-    string asks_from_file;
-    string bid_size_from_file;
-    string ask_size_from_file;
+    std::string time_from_file; 
+    std::string bids_from_file;
+    std::string asks_from_file;
+    std::string bid_size_from_file;
+    std::string ask_size_from_file;
 
     OrderBook _book;
+
+    void read_from_stream();
+    void printOB(OrderBookLimitObj& data);
 }
 
 #endif // !FEED_H_

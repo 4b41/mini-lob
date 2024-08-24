@@ -40,6 +40,7 @@ class OrderBook {
     Trades modifyOrder(OrderModify order);
 
     std::size_t size() const { return _orders.size(); }
+    OrderID nextID();
 
   private:
     struct OrderEntry {
@@ -56,8 +57,6 @@ class OrderBook {
     std::map<Price,OrderPointers, std::less<Price>> _asks;
     std::unordered_map<OrderID,OrderEntry> _orders;
 
-    OrderID nextID();
-    
     bool canMatch(Side side, Price price) const;
     bool canFill(Side side, Price price, Quantity quantity) const;
 
