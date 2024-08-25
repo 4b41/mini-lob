@@ -73,7 +73,7 @@ void Feed::simulate_cl(){
       std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::GTC, n_id, n_s, inp_p, inp_q);
       _book.addOrder(ptr);
 
-      std::cout << " GTC " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << "units has been submitted!" << std::endl;
+      std::cout << " GTC " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << "units @ " << inp_p << " " << "has been submitted!" << std::endl;
     }
 
     OrderBookLimitObj data = _book.getOrderData();
