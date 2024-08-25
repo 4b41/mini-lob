@@ -18,4 +18,3 @@ To compile and start the orderbook, run the following commands:
 ## Todo
 
 * Create makefile
-* fix screenshots
