@@ -1,6 +1,7 @@
 # mini-lob
 
-Order matching system with visualizer written in C++.
+Order matching system with visualizer written in C++. 
+
 ![start](./res/start.png)
 ![ex1](./res/example_1.png)
 ![ex2](./res/example_2.png)
