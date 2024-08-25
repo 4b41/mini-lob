@@ -3,10 +3,17 @@
 Order matching system with visualizer written in C++. 
 
 ![start](./res/start.png)
-![ex1](./res/example_1.png)
-![ex2](./res/example_2.png)
 
+---
 
+![ex1](./res/example_1.png)<br>
+Example orderbook state
+
+---
+![ex2](./res/example_2.png) <br>
+Example market order fill
+
+---
 ## Implementation
 
 The orderbook maintains its state within two seperate red-black binary trees implemented via tree-maps. Each individual tree corresponds to either the buy or sell limits of the book and each tree is comprised of list objects containing orders. Each limit is mapped with its corresponding limit price as a key and all orders are also mapped by a unique orderID key.
