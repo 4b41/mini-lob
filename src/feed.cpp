@@ -68,7 +68,7 @@ void Feed::simulate_cl(){
       std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::MARKET, n_id, n_s, inp_q);
       _book.addOrder(ptr);
 
-      std::cout << "Market " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << " units has been submitted!" << std::endl;
+      std::cout << "Market " << (inp_side == 1 ? "bid ":"ask ") << "order #" << n_id << " " << "for " << inp_q << " " << "units has been submitted!" << std::endl;
     } else if (inp_type == 2){
       std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::GTC, n_id, n_s, inp_p, inp_q);
       _book.addOrder(ptr);
@@ -88,24 +88,24 @@ void Feed::printOB(OrderBookLimitObj& data){
     
   size_t size = std::max(bids.size(), asks.size());
 
-  std::cout << std::endl << std::setw(6) << "A" << std::setw(13) << "Asks" << std::setw(15) << "Quantity" << std::setw(9) << "Bids" << std::setw(14) << "B" << std::endl;
+  std::cout << std::endl << std::setw(6) << "B" << std::setw(13) << "Bids" << std::setw(15) << "Quantity" << std::setw(9) << "Asks" << std::setw(14) << "A" << std::endl;
   
-  Quantity maxA = 0;
   Quantity maxB = 0;
+  Quantity maxA = 0;
 
   for (size_t i = 0; i < size; i++){
-    if (i < asks.size()){
-      maxA = std::max(maxA,asks[i]._quantity);
-    }
     if (i < bids.size()){
       maxB = std::max(maxB,bids[i]._quantity);
+    }
+    if (i < asks.size()){
+      maxA = std::max(maxA,asks[i]._quantity);
     }
   }
 
   for (size_t i = 0; i < size; i++){
-    if (i < asks.size()){
-      std::cout << std::setw(6) << asks[i]._price << " ";
-      double f = static_cast<double>(asks[i]._quantity)/maxA;
+    if (i < bids.size()){
+      std::cout << std::setw(6) << bids[i]._price << " ";
+      double f = static_cast<double>(bids[i]._quantity)/maxB;
       int barsize = static_cast<int>(f*12);
       for (int i = 0; i < 12-barsize; i++){
         std::cout << " ";
@@ -113,13 +113,13 @@ void Feed::printOB(OrderBookLimitObj& data){
       for (int i = 0; i < barsize; i++){
         std::cout << "█";
       }
-      std::cout << " " << std::setw(6) << asks[i]._quantity << "      ";
+      std::cout << " " << std::setw(6) << bids[i]._quantity << "      ";
     } else {
       std::cout << "                                ";
     }
-    if (i < bids.size()){
-      std::cout << std::setw(6) << bids[i]._quantity << " ";
-      double f = static_cast<double>(bids[i]._quantity)/maxB;
+    if (i < asks.size()){
+      std::cout << std::setw(6) << asks[i]._quantity << " ";
+      double f = static_cast<double>(asks[i]._quantity)/maxA;
       int barsize = static_cast<int>(f*12);
       for (int i = 0; i < barsize; i++){
         std::cout << "█";
@@ -127,17 +127,15 @@ void Feed::printOB(OrderBookLimitObj& data){
       for (int i = 0; i < 12-barsize; i++){
         std::cout << " ";
       }
-      std::cout << " " << std::setw(6) << bids[i]._price;
+      std::cout << " " << std::setw(6) << asks[i]._price;
     }
     std::cout << std::endl;
   }
   std::cout << std::endl << "---------------------------------------------------" << std::endl;
 }
 
-void clear(){
-}
 // 6  1    12  1 6  8 6 1 12     1 6
-//   A     Asks          Bids      B
+//   B     Bids          Asks      A
 // 100 ████████ 10     9 ██████    99
 // 101   ██████  8     8 █████     98
 // 102   ██████  8    12 ████████  97

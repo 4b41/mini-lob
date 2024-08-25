@@ -55,6 +55,11 @@ class Order {
       _remainingQuantity -= quantity;
     }
 
+    void fillAtMarket(Price p){
+      _price = p;
+      _orderType = OrderType::GTC;
+    }
+
   private:
     OrderType _orderType;
     OrderID _orderID;

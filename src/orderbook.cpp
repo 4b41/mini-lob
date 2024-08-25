@@ -9,6 +9,16 @@ Trades OrderBook::addOrder(OrderPointer order){
     return { };
   }
 
+  if (order->getOrderType() == OrderType::MARKET){
+    if (order->getSide() == Side::Buy && !_asks.empty()){
+      const auto& [ask,_] = *_asks.rbegin();
+      order->fillAtMarket(ask);
+    } else if (order->getSide() == Side::Sell && !_bids.empty()){
+      const auto& [bid,_] = *_bids.rbegin();
+      order->fillAtMarket(bid);
+    }
+  }
+
   if (order->getOrderType() == OrderType::FOK && !canMatch(order->getSide(), order->getPrice())){
     return { };
   }
