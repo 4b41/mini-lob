@@ -14,11 +14,10 @@ Using this data structure the orderbook is able to accomplish order addition, ca
 
 ![ex1](./res/example_1.png)<br>
 Example orderbook state
-
----
 ![ex2](./res/example_2.png) <br>
 Example market order fill
 
+---
 
 ## Quickstart
 
