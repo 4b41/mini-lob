@@ -24,7 +24,7 @@ Example market order fill
 
 * Accepts order input through piping and txt files input to allow backtesting of marketmaking trading strategies.
 * Supports Market, GTC, FOK, and GFD order types.
-* Allows for order modification, cancellation.
+* Allows for order submission, modification, and cancellation.
 
 ## Quickstart
 
