@@ -1,6 +1,8 @@
 #include <iostream>
-#include <fstream>
 #include <iomanip>
+#include <fstream>
+#include <string>
+#include <cstring>
 
 #include "../include/feed.h"
 #include "../include/orderbook.h"
@@ -25,6 +27,54 @@
 //      Trades log = _book.MatchOrders(); 
 //    }
 //  }
+
+void Feed::open_communication(){
+  this->_fd_write = open("OUT_pipe", O_WRONLY);
+  this->_fd_read = open("INP_pipe", O_WRONLY);
+
+  if (this->_fd_write == -1 || this->_fd_read == -1){
+    perror("Failed to open pipes!");
+    return;
+  }
+  this->_opencomm = true;
+}
+
+void Feed::read_from_pipe(){
+  if (!this->_opencomm || this->_fd_read == -1){
+    perror("Read pipe not found, failed to open communication.");
+    return;
+  }
+  char buf[256];
+  std::vector<std::string> tick;
+
+  while (true){
+    // tick format: SYMBOL SIDE PRICE QUANTITY 
+    ssize_t size_in = read(this->_fd_read,buf,256);
+    if (size_in > 0){
+      char delimiter[2] = ",";
+      char *token = strtok(buf,delimiter);
+      while (token != NULL){
+        tick.push_back(token);
+        token = strtok(buf,delimiter);
+      }
+      OrderID n_id = _book.nextID();
+      Side n_s = tick[1] == "B" ? Side::Buy:Side::Sell;
+      Price n_p = std::stoll(tick[2]);
+      Quantity n_q = std::stoll(tick[3]);
+
+      std::shared_ptr<Order> ptr = std::make_shared<Order>(OrderType::GTC, n_id, n_s, n_p, n_q);
+      _book.addOrder(ptr);
+    } else if (size_in < 0){
+      perror("Read failed");
+      break;
+    }
+    if (!this->_opencomm){
+      std::cout << "Closing read pipe.";
+      close(_fd_read);
+      break;
+    }
+  }
+}
 
 void Feed::simulate_cl(){
   std::ifstream f("./res/ascii.txt");

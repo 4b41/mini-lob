@@ -21,3 +21,6 @@ obj/
 Main
 
 data/*
+
+OUT_pipe
+INP_pipe

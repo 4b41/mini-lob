@@ -3,11 +3,16 @@
 #define FEED_H_
 
 #include "orderbook.h"
+
 #include <string>
+#include <thread>
+#include <fcntl.h>
+#include <unistd.h>
 
 class Feed {
   public:
     void simulate_cl();
+    void open_communication();
 
   private:
     Timestamp _time;
@@ -24,7 +29,13 @@ class Feed {
 
     OrderBook _book;
 
-    void read_from_stream();
+    int _fd_write;
+    int _fd_read;
+    bool _opencomm = false;
+
+    void read_from_txt();
+    void read_from_pipe();
+
     void printOB(OrderBookLimitObj& data);
 };
 
