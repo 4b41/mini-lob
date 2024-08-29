@@ -76,6 +76,69 @@ void Feed::read_from_pipe(){
   }
 }
 
+void Feed::write_all_to_pipe(){
+  if (!this->_opencomm || this->_fd_write == -1){
+    perror("Write pipe not found, failed to open communication.");
+    return;
+  }
+  OrderBookLimitObj data = this->_book.getOrderData();
+
+  const auto& bids = data.getBids();
+  const auto& asks = data.getAsks();
+  
+  for (size_t i = 0; i < bids.size(); i++){
+    // FORMAT: B/A, LIMIT, QUANTITY
+    //         B,   100,   40 
+    std::string str = "B, " + std::to_string(bids[i]._price) + ", " + std::to_string(bids[i]._quantity);
+    if (write(this->_fd_write, str.c_str(), str.size()) == -1){
+      perror("Failed to write to pipe");
+      return;
+    }
+  }
+  for (size_t i = 0; i < asks.size(); i++){
+    std::string str = "A, " + std::to_string(asks[i]._price) + ", " + std::to_string(asks[i]._quantity);
+    if (write(this->_fd_write, str.c_str(), str.size()) == -1){
+      perror("Failed to write to pipe");
+      return;
+    }
+  }
+}
+
+void Feed::write_best_to_pipe(int n){
+  if (!this->_opencomm || this->_fd_write == -1){
+    perror("Write pipe not found, failed to open communication.");
+    return;
+  }
+  OrderBookLimitObj data = this->_book.getOrderData();
+
+  const auto& bids = data.getBids();
+  const auto& asks = data.getAsks();
+
+  for (size_t i = 0; i < n; i++){
+    if (i < bids.size()){
+      std::string str = "B, " + std::to_string(bids[i]._price) + ", " + std::to_string(bids[i]._quantity);
+      if (write(this->_fd_write, str.c_str(), str.size()) == -1){
+        perror("Failed to write to pipe");
+        return;
+      }
+    }
+  }
+  for (size_t i = 0; i < n; i++){
+    if (i < asks.size()){
+      std::string str = "A, " + std::to_string(asks[i]._price) + ", " + std::to_string(asks[i]._quantity);
+      if (write(this->_fd_write, str.c_str(), str.size()) == -1){
+        perror("Failed to write to pipe");
+        return;
+      }
+    }
+  }
+}
+
+void Feed::write_recent_to_pipe(){
+
+}
+
+
 void Feed::simulate_cl(){
   std::ifstream f("./res/ascii.txt");
 
@@ -137,6 +200,7 @@ void Feed::printOB(OrderBookLimitObj& data){
   const auto& asks = data.getAsks();
     
   size_t size = std::max(bids.size(), asks.size());
+  size = std::min(static_cast<int>(size), 8); // limit to 8 orders closest to midprice
 
   std::cout << std::endl << " " << std::setw(6) << "B" << std::setw(13) << "Bids" << std::setw(15) << "Quantity" << std::setw(9) << "Asks" << std::setw(14) << "A" << std::endl;
   

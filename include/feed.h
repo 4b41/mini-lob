@@ -36,6 +36,10 @@ class Feed {
     void read_from_txt();
     void read_from_pipe();
 
+    void write_all_to_pipe();
+    void write_best_to_pipe(int n);
+    void write_recent_to_pipe();
+
     void printOB(OrderBookLimitObj& data);
 };
 
