@@ -135,7 +135,25 @@ void Feed::write_best_to_pipe(int n){
 }
 
 void Feed::write_recent_to_pipe(){
-
+  for (size_t i = 0; i < this->_recent.size(); i++){
+    // FORMAT: B/A, LIMIT, QUANTITY
+    if (_recent[i].getBid() != NULL){
+      std::string str = "B, " + std::to_string(_recent[i].getBid()_price) + ", " + std::to_string(_recent[i].getBid()_quantity);
+      if (write(this->_fd_write, str.c_str(), str.size()) == -1){
+        perror("Failed to write to pipe");
+        return;
+      }
+    }
+  }
+  for (size_t i = 0; i < this->_recent.size(); i++){
+    if (_recent[i].getAsk() != NULL){
+      std::string str = "A, " + std::to_string(_recent[i].getAsk()._price) + ", " + std::to_string(_recent[i].getAsk()._quantity);
+      if (write(this->_fd_write, str.c_str(), str.size()) == -1){
+        perror("Failed to write to pipe");
+        return;
+      }
+    }
+  }
 }
 
 

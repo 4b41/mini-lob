@@ -150,6 +150,7 @@ Trades OrderBook::MatchOrders(){
       cancelOrder(order->getOrderID());
     }
   }
+  _recent = trades;
   return trades;
 }
 
