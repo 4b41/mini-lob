@@ -6,7 +6,7 @@ Order matching system with visualizer written in C++.
 
 ## Implementation
 
-The orderbook maintains its state within two seperate red-black binary trees implemented via tree-maps. Each tree corresponds to either the buy or sell limits of the book and is comprised of list objects containing orders. Each limit is mapped with its corresponding limit price as a key and all orders are also mapped by a unique orderID key.
+This order book maintains its state using two separate red-black binary trees, implemented as tree maps. Each tree corresponds to either the buy or sell limits of the book and is comprised of list objects containing orders. Each limit is mapped with its corresponding limit price as a key and all orders are also mapped by a unique orderID key.
 
 Using this data structure the orderbook is able to accomplish order addition, cancellation and execution all with an average time complexity of O(1).
 
